@@ -2,6 +2,7 @@
 using CourseWorkMMO.Queues;
 using CourseWorkMMO.Selectors;
 using CourseWorkMMO.Generators;
+using System.Xml.Linq;
 
 namespace CourseWorkMMO.Elements
 {
@@ -100,6 +101,7 @@ namespace CourseWorkMMO.Elements
         public virtual Action<Item>? Addition { get; set; } = null;
         public readonly List<Process> BlockingOnStartWhenWork = new();
         public readonly List<Process> BlockingOnFinishWhenWork = new();
+        protected List<(int type, IGenerator generator)> TypeGenerator { get;} = new();  
 
         public Process(string name, IGenerator delayGenerator, Selector selector, Queue queue)
             : base(name, delayGenerator, selector) => Queue = queue;
@@ -170,6 +172,27 @@ namespace CourseWorkMMO.Elements
         {
             if (!FullWorking) return;
             if (NextTime <= CurrentTime) NextStep();
+        }
+
+        public override void UpdateNextTime()
+        {
+            if (WorkingOn == null) throw new ArgumentNullException();
+            foreach (var (type, generator) in TypeGenerator)
+            {
+                if (type == WorkingOn.Type)
+                {
+                    NextTime = CurrentTime + generator.NextDelay();
+                    return;
+                }
+            }
+            base.UpdateNextTime();
+        }
+
+        public virtual void AddGeneratorForType(int type, IGenerator generator)
+        {
+            if (TypeGenerator.Any(el => el.type == type))
+                throw new ArgumentException("There is already generator for this type");
+            TypeGenerator.Add((type, generator));
         }
 
         public override void PrintStatistic()

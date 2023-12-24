@@ -134,6 +134,15 @@ namespace CourseWorkMMO.Elements
                 NextStep();
         }
 
+        public override void AddGeneratorForType(int type, IGenerator generator)
+        {
+            if (TypeGenerator.Any(el => el.type == type))
+                throw new ArgumentException("There is already generator for this type");
+            TypeGenerator.Add((type, generator));
+            foreach (var process in _subProcesses)
+                process.AddGeneratorForType(type, generator);
+        }
+
         public override void PrintEvent()
         {
             foreach (var process in _eventProcesses)
