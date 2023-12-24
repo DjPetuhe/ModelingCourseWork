@@ -68,7 +68,7 @@ namespace CourseWorkMMO
             {
                 Addition = changeQueue
             };
-            mod.Simulate(1000);
+            mod.Simulate(100);
         }
 
         public static void HospitalModel()

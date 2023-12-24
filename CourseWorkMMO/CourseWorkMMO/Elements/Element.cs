@@ -12,7 +12,7 @@ namespace CourseWorkMMO.Elements
         protected Dispose? PersonalDispose { get; set; }
 
         public virtual double CurrentTime { get; set; }
-        public double NextTime { get; protected set; } = double.MaxValue;
+        public virtual double NextTime { get; protected set; } = double.MaxValue;
 
         public string MovedTo { get; protected set; } = "";
 

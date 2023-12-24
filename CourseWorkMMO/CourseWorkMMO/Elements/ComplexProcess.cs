@@ -26,13 +26,13 @@ namespace CourseWorkMMO.Elements
             }
         }
 
-        public new int WorkingProcesses
+        public override int WorkingProcesses
         {
             get { return _subProcesses.Where(p => p.FullWorking).Count(); }
         }
 
         private Action<Item>? _addition = null;
-        public new Action<Item>? Addition 
+        public override Action<Item>? Addition 
         { 
             get { return _addition; }
             set 
@@ -111,7 +111,7 @@ namespace CourseWorkMMO.Elements
 
         public override void UpdateNextTime() => NextTime = _subProcesses.Min(p => p.NextTime);
 
-        public new void UnblockOnStart()
+        public override void UnblockOnStart()
         {
             if (FullWorking) return;
             if (!Queue.IsEmpty)
@@ -127,7 +127,7 @@ namespace CourseWorkMMO.Elements
             }
         }
 
-        public new void UnblockOnFinish()
+        public override void UnblockOnFinish()
         {
             if (!PartlyWorking) return;
             while (NextTime <= CurrentTime)

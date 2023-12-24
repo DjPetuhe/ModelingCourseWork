@@ -54,7 +54,7 @@ namespace CourseWorkMMO.Elements
 
         public double WorkingTime { get; protected set; }
 
-        public int WorkingProcesses
+        public virtual int WorkingProcesses
         {
             get { return FullWorking ? 1 : 0; }
         }
@@ -85,19 +85,19 @@ namespace CourseWorkMMO.Elements
         }
 
         private double _nextTime;
-        public new double NextTime
+        public override double NextTime
         {
             get
             {
                 if (_blockingOnFinish > 0) return double.MaxValue;
                 return _nextTime;
             }
-            set { _nextTime = value; }
+            protected set { _nextTime = value; }
         }
 
         public Queue Queue { get; }
         protected Item? WorkingOn { get; set; }
-        public Action<Item>? Addition { get; set; } = null;
+        public virtual Action<Item>? Addition { get; set; } = null;
         public readonly List<Process> BlockingOnStartWhenWork = new();
         public readonly List<Process> BlockingOnFinishWhenWork = new();
 
@@ -156,7 +156,7 @@ namespace CourseWorkMMO.Elements
             else next.MoveTo(finishedItem);
         }
 
-        public void UnblockOnStart()
+        public virtual void UnblockOnStart()
         {
             if (FullWorking) return;
             if (!Queue.IsEmpty)
@@ -166,7 +166,7 @@ namespace CourseWorkMMO.Elements
             }
         }
 
-        public void UnblockOnFinish()
+        public virtual void UnblockOnFinish()
         {
             if (!FullWorking) return;
             if (NextTime <= CurrentTime) NextStep();
