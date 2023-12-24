@@ -2,7 +2,7 @@
 
 namespace CourseWorkMMO.Elements
 {
-    public class Dispose
+    public class GeneralDispose
     {
         public static int Destroyed 
         { 
