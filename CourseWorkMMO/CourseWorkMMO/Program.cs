@@ -10,115 +10,70 @@ namespace CourseWorkMMO
     {
         public static void Main(string[] args)
         {
-            CarBankModel();
-            //HospitalModel();
+            PortModel();
         }
 
-        public static void CarBankModel()
+        public static void PortModel()
         {
-            IGenerator generatorCreate = new ExponentialGenerator(0.5);
-            IGenerator generatorCashier = new ExponentialGenerator(0.3);
-            IGenerator generatorStarting = new NormalGenerator(1, 0.3);
+            IGenerator createShipGenerator = new UniformGenerator(4, 18);
+            IGenerator createStormGenerator = new ExponentialGenerator(48);
+            IGenerator tugboatGenerator = new ConstantGenerator(1);
+            IGenerator pierDefaultGenerator = new UniformGenerator(16, 20);
+            IGenerator pierType1Generator = new UniformGenerator(16, 20);
+            IGenerator pierType2Generator = new UniformGenerator(21, 27);
+            IGenerator pierType3Generator = new UniformGenerator(32, 40);
+            IGenerator pierType4Generator = new UniformGenerator(18, 24);
+            IGenerator englandGenerator = new UniformGenerator(216, 264);
+            IGenerator stormGenerator = new UniformGenerator(2, 6);
 
-            Queue cashier1Qeueu = new(3);
-            cashier1Qeueu.Enqueue(new());
-            cashier1Qeueu.Enqueue(new());
-            Queue cashier2Qeueu = new(3);
-            cashier2Qeueu.Enqueue(new());
-            cashier2Qeueu.Enqueue(new());
+            WeightSelector createShipSelector = new();
+            WeightSelector createStormSelector = new();
+            TypeSelector tugBoatSelector = new();
+            WeightSelector pierSelector = new();
+            WeightSelector englandSelector = new();
 
-            Process cashier1 = new("Cashier1", generatorCashier, cashier1Qeueu);
-            Process cashier2 = new("Cashier2", generatorCashier, cashier2Qeueu);
+            PriorityQueue tugboatQueue = new(int.MaxValue);
 
-            cashier1.SetStartingWorkingOn(new(), generatorStarting.NextDelay());
-            cashier2.SetStartingWorkingOn(new(), generatorStarting.NextDelay());
+            Create<Ship> createShip = new("ShipCreator", createShipGenerator, createShipSelector);
+            Create<Item> createStorm = new("StormCreator", createStormGenerator, createStormSelector);
 
-            QueuePrioritySelector createSelector = new();
-            createSelector.AddNextProcess(cashier1);
-            createSelector.AddNextProcess(cashier2);
-            Create<Item> cr = new("Create", generatorCreate, createSelector);
+            Process tugboat = new("Tugboat", tugboatGenerator, tugBoatSelector, tugboatQueue);
+            ComplexProcess pier = new("Pier", pierDefaultGenerator, pierSelector, 0, 3);
+            ComplexProcess england = new("England", englandGenerator, englandSelector, int.MaxValue, 5);
+            Process storm = new("Storm", stormGenerator, int.MaxValue);
 
-            cr.SetStartingTime(0.1);
+            Dispose stormDispose = new();
 
-            static bool changeQueue(List<Element> elements)
-            {
-                bool swapped = false;
-                List<Process> fullQueue = elements.OfType<Process>().Where(p => p.Queue.QueueSize >= 2).ToList();
-                List<Process> emptyQueue = elements.OfType<Process>().Where(p => p.Queue.QueueSize <= 1).ToList();
-                foreach (var full in fullQueue)
-                {
-                    foreach (var empty in emptyQueue)
-                    {
-                        if (full.Queue.QueueSize - empty.Queue.QueueSize >= 2)
-                        {
-                            swapped = true;
-                            Console.Write($"\n\nCar moved from {full.Name} queue to {empty.Name} queue\n");
-                            if (empty.Queue.QueueSize == 1)
-                                emptyQueue.Remove(empty);
-                            Item car = full.Queue.Dequeue();
-                            empty.MoveTo(car);
-                            break;
-                        }
-                    }
-                }
-                return swapped;
-            }
+            createShipSelector.AddNextElement(tugboat, 1);
+            createStormSelector.AddNextElement(storm, 1);
+            tugBoatSelector.AddElementForType(1, pier);
+            tugBoatSelector.AddElementForType(2, pier);
+            tugBoatSelector.AddElementForType(3, pier);
+            tugBoatSelector.AddElementForType(4, pier);
+            tugBoatSelector.AddElementForType(5, null);
+            tugBoatSelector.AddElementForType(6, england);
+            pierSelector.AddNextElement(tugboat, 1);
+            englandSelector.AddNextElement(tugboat, 1);
 
-            Model mod = new(new List<Element>() { cr, cashier1, cashier2 })
-            {
-                Addition = changeQueue
-            };
-            mod.Simulate(100);
-        }
+            tugboatQueue.AddPriority(1, (Item item) => item.Type == 5 || item.Type == 6);
 
-        public static void HospitalModel()
-        {
-            IGenerator generatorCreate = new ExponentialGenerator(15);
-            IGenerator generatorPathToHospitalRooms = new UniformGenerator(3, 8);
-            IGenerator generatorPathReceptionToLab = new UniformGenerator(2, 5);
-            IGenerator generatorLabRegistry = new ErlangGenerator(3, 4.5);
-            IGenerator generatorLabAnalyse = new ErlangGenerator(2, 4);
-            IGenerator generatorReception = new ExponentialGenerator(15); //own choice
+            tugboat.BlockingOnFinishWhenWork.Add(pier);
+            pier.BlockingOnStartWhenWork.Add(tugboat);
+            storm.BlockingOnStartWhenWork.Add(tugboat);
+            storm.BlockingOnFinishWhenWork.Add(tugboat);
 
-            WeightSelector selectorCreate = new();
-            TypeSelector selectorReception = new();
-            WeightSelector selectorPathReceptionToLab = new();
-            WeightSelector selectorLabRegistry = new();
-            TypeSelector selectorLabAnalyse = new();
-            WeightSelector selectorPathLabToReception = new();
+            storm.PersonalDispose = stormDispose;
 
-            PriorityQueue queueReception = new(100);
+            pier.Addition = (Item item) => item.Type = item.Type == 4 ? 6 : 5;
 
-            Create<Ship> create = new("Create", generatorCreate, selectorCreate);
-            ComplexProcess Reception = new("Reception", generatorReception, selectorReception, queueReception, 2);
-            ComplexProcess PathToHospitalRooms = new("PathHospitalRooms", generatorPathToHospitalRooms, 100, 3);
-            ComplexProcess PathReceptionToLab = new("PathReceptionToLab", generatorPathReceptionToLab, selectorPathReceptionToLab, 100, 100);
-            Process LabRegistry = new("LabRegistry", generatorLabRegistry, selectorLabRegistry, 100);
-            ComplexProcess LabAnalyse = new("LabAnalyse", generatorLabAnalyse, selectorLabAnalyse, 100, 2);
-            ComplexProcess PathLabToReception = new("PathLabToReception", generatorPathReceptionToLab, selectorPathLabToReception, 100, 100);
+            for (int i = 0; i < 4; i++)
+                tugboatQueue.Enqueue(new Ship(4));
 
-            selectorCreate.AddNextElement(Reception, 1);
+            tugboat.SetStartingWorkingOn(new Ship(4), tugboatGenerator.NextDelay());
 
-            selectorReception.AddElementForType(1, PathToHospitalRooms);
-            selectorReception.AddElementForType(2, PathReceptionToLab);
-            selectorReception.AddElementForType(3, PathReceptionToLab);
 
-            selectorPathReceptionToLab.AddNextElement(LabRegistry, 1);
-
-            selectorLabRegistry.AddNextElement(LabAnalyse, 1);
-
-            selectorLabAnalyse.AddElementForType(2, PathLabToReception);
-            selectorLabAnalyse.AddElementForType(3, null);
-
-            selectorPathLabToReception.AddNextElement(Reception, 1);
-
-            queueReception.AddPriority(1, (Item item) => item.Type == 1);
-
-            PathLabToReception.Addition = (Item item) => item.Type = item.Type == 2 ? 1 : item.Type;
-
-            Model mod = new(new List<Element>() { create, Reception, PathToHospitalRooms, PathReceptionToLab, LabRegistry, LabAnalyse, PathLabToReception });
+            Model mod = new(new List<Element>() { createShip, createStorm, tugboat, pier, england, storm });
             mod.Simulate(1000);
-            mod.PrintHospitalResults();
         }
     }
 }
