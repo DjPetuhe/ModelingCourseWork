@@ -156,6 +156,8 @@ namespace CourseWorkMMO.Elements
             Console.Write($", Queue: {Queue.QueueSize}");
             Console.Write($", Failure: {FailureCount}");
             Console.Write($", Next time: {(NextTime == double.MaxValue ? "-" : NextTime)}");
+            if (BlockingOnStart > 0) Console.Write(", start blocked");
+            if (BlockingOnFinish > 0) Console.Write(", finish blocked");
         }
 
         public override void PrintResults()

@@ -14,7 +14,7 @@ namespace CourseWorkMMO.Queues
         public Queue(int queueMaxSize)
             => QueueMaxSize = queueMaxSize;
 
-        public Item Dequeue()
+        public virtual Item Dequeue()
         {
             if (IsEmpty)
                 throw new InvalidOperationException("Queue is empty.");

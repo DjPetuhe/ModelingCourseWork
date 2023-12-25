@@ -9,7 +9,7 @@ namespace CourseWorkMMO.Elements
         public readonly string Name;
         private readonly IGenerator _defaultDelayGenerator;
         protected Selector Selector { get; }
-        protected Dispose? PersonalDispose { get; set; }
+        public Dispose? PersonalDispose { get; set; }
 
         public virtual double CurrentTime { get; set; }
         public virtual double NextTime { get; protected set; } = double.MaxValue;

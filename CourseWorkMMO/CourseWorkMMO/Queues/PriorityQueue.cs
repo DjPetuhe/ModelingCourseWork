@@ -17,7 +17,7 @@ namespace CourseWorkMMO.Queues
             _priorities[priority].Add(condition);
         }
 
-        public new Item Dequeue()
+        public override Item Dequeue()
         {
             if (IsEmpty)
                 throw new InvalidOperationException("Queue is empty.");

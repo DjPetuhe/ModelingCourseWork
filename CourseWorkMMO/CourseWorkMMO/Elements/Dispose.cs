@@ -1,5 +1,4 @@
-﻿
-using CourseWorkMMO.Items;
+﻿using CourseWorkMMO.Items;
 
 namespace CourseWorkMMO.Elements
 {

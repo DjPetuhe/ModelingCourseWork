@@ -2,7 +2,6 @@
 using CourseWorkMMO.Queues;
 using CourseWorkMMO.Selectors;
 using CourseWorkMMO.Generators;
-using System.Xml.Linq;
 
 namespace CourseWorkMMO.Elements
 {
@@ -16,6 +15,7 @@ namespace CourseWorkMMO.Elements
             get { return _fullWorking; }
             protected set
             {
+                if (value == _fullWorking) return;
                 if (value)
                 {
                     BlockingOnFinishWhenWork.ForEach(p => p.BlockingOnFinish++);
@@ -85,7 +85,7 @@ namespace CourseWorkMMO.Elements
             }
         }
 
-        private double _nextTime;
+        private double _nextTime = double.MaxValue;
         public override double NextTime
         {
             get
@@ -99,8 +99,8 @@ namespace CourseWorkMMO.Elements
         public Queue Queue { get; }
         protected Item? WorkingOn { get; set; }
         public virtual Action<Item>? Addition { get; set; } = null;
-        public readonly List<Process> BlockingOnStartWhenWork = new();
-        public readonly List<Process> BlockingOnFinishWhenWork = new();
+        public List<Process> BlockingOnStartWhenWork { get; } = new();
+        public List<Process> BlockingOnFinishWhenWork { get; } = new();
         protected List<(int type, IGenerator generator)> TypeGenerator { get;} = new();  
 
         public Process(string name, IGenerator delayGenerator, Selector selector, Queue queue)
@@ -137,6 +137,14 @@ namespace CourseWorkMMO.Elements
             CountFinished++;
             Item finishedItem = WorkingOn ?? throw new ArgumentException("Can't finish unexisting item.");
             Addition?.Invoke(finishedItem);
+            Element? next = Selector.ChooseNextElement(finishedItem);
+            MovedTo = next != null ? next.Name : "Dispose";
+            if (next == null)
+            {
+                if (PersonalDispose == null) GeneralDispose.Destroy(finishedItem, CurrentTime);
+                else PersonalDispose.Destroy(finishedItem, CurrentTime);
+            }
+            else next.MoveTo(finishedItem);
             if (Queue.IsEmpty || _blockingOnStart > 0)
             {
                 FullWorking = false;
@@ -148,14 +156,6 @@ namespace CourseWorkMMO.Elements
                 WorkingOn = Queue.Dequeue();
                 UpdateNextTime();
             }
-            Element? next = Selector.ChooseNextElement(finishedItem);
-            MovedTo = next != null ? next.Name : "Dispose";
-            if (next == null)
-            {
-                if (PersonalDispose == null) GeneralDispose.Destroy(finishedItem, CurrentTime);
-                else PersonalDispose.Destroy(finishedItem, CurrentTime);
-            }
-            else next.MoveTo(finishedItem);
         }
 
         public virtual void UnblockOnStart()
@@ -164,6 +164,7 @@ namespace CourseWorkMMO.Elements
             if (!Queue.IsEmpty)
             {
                 WorkingOn = Queue.Dequeue();
+                FullWorking = true;
                 UpdateNextTime();
             }
         }
@@ -202,8 +203,8 @@ namespace CourseWorkMMO.Elements
             Console.Write($", Queue: {Queue.QueueSize}");
             Console.Write($", Failure: {FailureCount}");
             Console.Write($", Next time: {(NextTime == double.MaxValue ? "-" : NextTime)}");
-            if (_blockingOnStart > 0) Console.Write(", start blocked");
-            if (_blockingOnFinish > 0) Console.Write(", finish blocked");
+            if (BlockingOnStart > 0) Console.Write(", start blocked");
+            if (BlockingOnFinish > 0) Console.Write(", finish blocked");
         }
 
         public override void PrintResults()
