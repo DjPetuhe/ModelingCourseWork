@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CourseWorkMMO.Elements.ComplexProcess">
+    <Position X="4.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIgBAAECIAQAAoAIAAAABAAAAYAIAggAAQAIgAAAAAA=</HashCode>
+      <FileName>Elements\ComplexProcess.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Elements.Create">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAQAAgAAAAAAQAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Elements\Create.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Elements.Create&lt;T&gt;">
+    <Position X="4.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Elements\Create.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Elements.Dispose">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAhAAAAAAAAAAABAAIA=</HashCode>
+      <FileName>Elements\Dispose.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Elements.Element">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIAAAAACAAQAAoAAAAAAAAQAAAAIAYEAAAAAgAAAAAA=</HashCode>
+      <FileName>Elements\Element.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Elements.Process">
+    <Position X="7" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIARAgEWAAQgAgAEAAAgSAAgQQAIQggCECAIgICAAAA=</HashCode>
+      <FileName>Elements\Process.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Generators.ConstantGenerator">
+    <Position X="0.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAQAAAACAA=</HashCode>
+      <FileName>Generators\ConstantGenerator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseWorkMMO.Generators.ErlangGenerator">
+    <Position X="2.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAAAAACAAAAAQAAACAAAAA=</HashCode>
+      <FileName>Generators\ErlangGenerator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseWorkMMO.Generators.ExponentialGenerator">
+    <Position X="0.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAEAAAAAAAAAAACAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Generators\ExponentialGenerator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseWorkMMO.Generators.NormalGenerator">
+    <Position X="2.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAEAACIAAAAAAACAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Generators\NormalGenerator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseWorkMMO.Generators.UniformGenerator">
+    <Position X="0.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAACAAAAAEAAAAAAAIAAACIAAAAAAgAAIAAAAAAA=</HashCode>
+      <FileName>Generators\UniformGenerator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseWorkMMO.Items.Item">
+    <Position X="2.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAQAAAAAAAAE=</HashCode>
+      <FileName>Items\Item.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Items.Ship">
+    <Position X="2.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Items\Ship.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Queues.PriorityQueue">
+    <Position X="11.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAgAAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Queues\PriorityQueue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Queues.Queue">
+    <Position X="9.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAACAgCAAQAAAAAAAAAAAABAAIAAAIAAAAAAA=</HashCode>
+      <FileName>Queues\Queue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Selectors.ProbabilitySelector">
+    <Position X="11.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAIAAAEAAACAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Selectors\ProbabilitySelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Selectors.QueuePrioritySelector">
+    <Position X="11.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAACAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Selectors\QueuePrioritySelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Selectors.Selector">
+    <Position X="9.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Selectors\Selector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Selectors.TypeSelector">
+    <Position X="9.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAACAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Selectors\TypeSelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseWorkMMO.Selectors.WeightSelector">
+    <Position X="11.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAEAAACAAACAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Selectors\WeightSelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="CourseWorkMMO.Generators.IGenerator" Collapsed="true">
+    <Position X="2.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Generators\IGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -32,5 +32,11 @@ namespace CourseWorkMMO.Queues
 
         public void UpdateQueueSizeSum(double oldTime, double newTime)
             => QueueSizeSum += (newTime - oldTime) * QueueSize;
+
+        public void Clear()
+        {
+            Items.Clear();
+            QueueSizeSum = 0;
+        }
     }
 }

@@ -4,54 +4,58 @@ namespace CourseWorkMMO
 {
     public class Model
     {
+        public bool PrintingSteps { get; set; }
         public Func<List<Element>, bool>? Addition { get; set; } = null;
+        private readonly List<Dispose> _disposes = new();
         private readonly List<Element> _elements;
-        private int _additionalEventHappened;
-        private double _avarageItemsInModelSum;
-        private int _startingItems;
         private int _step;
         private double _currTime;
-        private double dif;
+        private double _dif;
 
-        public Model(List<Element> elements) => _elements = elements;
+        public Model(List<Element> elements)
+        {
+            _elements = elements;
+            Dispose GeneralDispose = new();
+            foreach (var el in elements)
+            {
+                el.PersonalDispose ??= GeneralDispose;
+                if (!_disposes.Contains(el.PersonalDispose))
+                    _disposes.Add(el.PersonalDispose);
+            }
+        }
 
         public void Simulate(double totalTime)
         {
-            _step = 0;
-            _currTime = 0;
-            _startingItems = 0;
-            foreach (var el in _elements.OfType<Process>())
-            {
-                _startingItems += el.Queue.QueueSize;
-                _startingItems += el.WorkingProcesses;
-            }
-            GeneralDispose.Clear();
+            Clear();
+            StatsHelper.EvaluateStartingItems(_elements);
             List<Element> nextElements = new();
-            PrintSteps();
+            if (PrintingSteps) PrintSteps();
             double nextTime = _elements.Min(el => el.NextTime);
             while (nextTime < totalTime)
             {
-                dif = nextTime - _currTime;
+                _dif = nextTime - _currTime;
                 _currTime = nextTime;
                 _elements.ForEach(el => el.CurrentTime = _currTime);
                 nextElements = _elements.Where(el => el.NextTime == _currTime).ToList();
                 nextElements.ForEach(el => el.NextStep());
-                PrintSteps(nextElements);
-                EvaluateStatistics();
+                if (PrintingSteps) PrintSteps(nextElements);
+                StatsHelper.EvaluateStepStatistics(_elements, _dif, _currTime);
                 if (Addition?.Invoke(_elements) == true)
                 {
                     _elements.ForEach(el => el.PrintStatistic());
-                    _additionalEventHappened++;
+                    StatsHelper.AdditionalEventHappened++;
                 }
                 nextTime = _elements.Min(el => el.NextTime);
             }
             PrintResults();
         }
 
-        private void EvaluateStatistics()
+        private void Clear()
         {
-            int itemsInModel = _elements.OfType<Create>().Sum(cr => cr.Created) + _startingItems - GeneralDispose.Destroyed;
-            _avarageItemsInModelSum += itemsInModel * dif;
+            _step = 0;
+            _currTime = 0;
+            _disposes.ForEach(d => d.Clear());
+            StatsHelper.Clear();
         }
 
         private void PrintSteps() => PrintSteps(new());
@@ -70,21 +74,16 @@ namespace CourseWorkMMO
             Console.Write("\n\n" + new string('=', 30) + "RESULT" + new string('=', 30));
             _elements.ForEach(el => el.PrintResults());
             int totalCreated = _elements.OfType<Create>().Sum(cr => cr.Created);
-            Console.Write($"\nAvarage items in model: {_avarageItemsInModelSum / _currTime}");
-            //Console.Write($"\nAvarage time for item in model: {GeneralDispose.AvarageLifeTime}");
-            //Console.Write($"\nAvarage time between dispose: {_currTime / GeneralDispose.Destroyed}");
-            Console.Write($"\nAdditional event happened: {_additionalEventHappened}");
+            Console.Write($"\nAvarage items in model: {StatsHelper.AvarageItemsInModelSum / _currTime}");
+            foreach (int type in StatsHelper.TotalLifeTimesType.Keys)
+            {
+                if (type == 0) Console.Write($"\nStorm avarage life time: {StatsHelper.AvarageLifeTimeType(type)}");
+                else Console.Write($"\nShip type {type} avarage life time: {StatsHelper.AvarageLifeTimeType(type)}");
+            }
+            Console.Write($"\nShip type 1-3 avarage life time: {StatsHelper.AvarageLifeTimeType(new List<int>() { 1, 2, 3})}");
+            Console.Write($"\nShip all types avarage life time: {StatsHelper.AvarageLifeTimeType(new List<int>() { 1, 2, 3, 4 })}");
+            Console.Write($"\nAdditional event happened: {StatsHelper.AdditionalEventHappened}");
             Console.WriteLine();
-        }
-
-        public void PrintHospitalResults()
-        {
-            Console.Write("\n\n" + new string('=', 30) + "HOSPITAL RESULT BY TYPE" + new string('=', 30));
-            Process lab = _elements.OfType<Process>().First(el => el.Name.Equals("LabRegistry")) ?? throw new Exception("No lab exist");
-            int totalLab = lab.Queue.QueueSize + lab.WorkingProcesses + lab.CountFinished;
-            Console.WriteLine($"\nAvarage time between lab arrival: {_currTime / totalLab}");
-            foreach (int type in GeneralDispose.TotalLifeTimesType.Keys)
-                Console.WriteLine($"Patient type {type} avarage life time: {GeneralDispose.AvarageLifeTimeType(type)}");
         }
     }
 }

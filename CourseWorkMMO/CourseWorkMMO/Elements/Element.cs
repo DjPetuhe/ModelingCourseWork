@@ -26,6 +26,11 @@ namespace CourseWorkMMO.Elements
         public virtual void UpdateNextTime() => NextTime = CurrentTime + _defaultDelayGenerator.NextDelay();
         public abstract void NextStep();
         public virtual void MoveTo(Item item) { }
+        public virtual void Clear()
+        {
+            CurrentTime = 0;
+            NextTime = double.MaxValue;
+        }
         public virtual void PrintEvent() => Console.Write($"\nEvent happened in {Name}. Moved to {MovedTo}");
         public abstract void PrintStatistic();
         public abstract void PrintResults();

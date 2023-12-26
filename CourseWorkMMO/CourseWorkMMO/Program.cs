@@ -10,10 +10,10 @@ namespace CourseWorkMMO
     {
         public static void Main(string[] args)
         {
-            PortModel();
+            PortModel(5, false);
         }
 
-        public static void PortModel()
+        public static void PortModel(int amountOfTests, bool printSteps = true)
         {
             IGenerator createShipGenerator = new UniformGenerator(4, 18);
             IGenerator createStormGenerator = new ExponentialGenerator(48);
@@ -39,10 +39,22 @@ namespace CourseWorkMMO
 
             Process tugboat = new("Tugboat", tugboatGenerator, tugBoatSelector, tugboatQueue);
             ComplexProcess pier = new("Pier", pierDefaultGenerator, pierSelector, 0, 3);
-            ComplexProcess england = new("England", englandGenerator, englandSelector, int.MaxValue, 5);
+            ComplexProcess england = new("England", englandGenerator, englandSelector, 0, 5);
             Process storm = new("Storm", stormGenerator, int.MaxValue);
 
             Dispose stormDispose = new();
+
+            List<Element> elements = new() { createShip, createStorm, tugboat, pier, england, storm };
+
+            Model mod = new(elements)
+            {
+                PrintingSteps = printSteps
+            };
+
+            pier.AddGeneratorForType(1, pierType1Generator);
+            pier.AddGeneratorForType(2, pierType2Generator);
+            pier.AddGeneratorForType(3, pierType3Generator);
+            pier.AddGeneratorForType(4, pierType4Generator);
 
             createShipSelector.AddNextElement(tugboat, 1);
             createStormSelector.AddNextElement(storm, 1);
@@ -64,16 +76,31 @@ namespace CourseWorkMMO
 
             storm.PersonalDispose = stormDispose;
 
-            pier.Addition = (Item item) => item.Type = item.Type == 4 ? 6 : 5;
+            pier.Addition = (Item item, double _) => item.Type = item.Type == 4 ? 6 : 5;
+            england.Addition = (Item item, double currentTime) =>
+            {
+                item.Type = 4;
+                item.CreatedTime = currentTime;
+            };
+            tugboat.Addition = (Item item, double currentTime) =>
+            {
+                if (item.Type == 6) StatsHelper.AddLifeTime(item, currentTime);
+            };
 
-            for (int i = 0; i < 4; i++)
-                tugboatQueue.Enqueue(new Ship(4));
+            for (int i = 0; i < amountOfTests; i++)
+            {
+                StatsHelper.NextTest(i);
+                elements.ForEach(el => el.Clear());
 
-            tugboat.SetStartingWorkingOn(new Ship(4), tugboatGenerator.NextDelay());
+                for (int j = 0; j < 4; j++)
+                    tugboatQueue.Enqueue(new Ship(4) { CreatedTime = 0 });
 
+                tugboat.SetStartingWorkingOn(new Ship(4), tugboatGenerator.NextDelay());
 
-            Model mod = new(new List<Element>() { createShip, createStorm, tugboat, pier, england, storm });
-            mod.Simulate(1000);
+                mod.Simulate(500000);
+            }
+
+            StatsHelper.BuildPlots();
         }
     }
 }

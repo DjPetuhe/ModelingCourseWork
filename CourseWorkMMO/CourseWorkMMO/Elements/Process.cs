@@ -98,10 +98,10 @@ namespace CourseWorkMMO.Elements
 
         public Queue Queue { get; }
         protected Item? WorkingOn { get; set; }
-        public virtual Action<Item>? Addition { get; set; } = null;
+        public virtual Action<Item, double>? Addition { get; set; } = null;
         public List<Process> BlockingOnStartWhenWork { get; } = new();
         public List<Process> BlockingOnFinishWhenWork { get; } = new();
-        protected List<(int type, IGenerator generator)> TypeGenerator { get;} = new();  
+        protected List<(int type, IGenerator generator)> TypeGenerator { get; } = new();  
 
         public Process(string name, IGenerator delayGenerator, Selector selector, Queue queue)
             : base(name, delayGenerator, selector) => Queue = queue;
@@ -136,12 +136,12 @@ namespace CourseWorkMMO.Elements
         {
             CountFinished++;
             Item finishedItem = WorkingOn ?? throw new ArgumentException("Can't finish unexisting item.");
-            Addition?.Invoke(finishedItem);
+            Addition?.Invoke(finishedItem, CurrentTime);
             Element? next = Selector.ChooseNextElement(finishedItem);
             MovedTo = next != null ? next.Name : "Dispose";
             if (next == null)
             {
-                if (PersonalDispose == null) GeneralDispose.Destroy(finishedItem, CurrentTime);
+                if (PersonalDispose == null) throw new Exception("There is no dispose");
                 else PersonalDispose.Destroy(finishedItem, CurrentTime);
             }
             else next.MoveTo(finishedItem);
@@ -196,11 +196,25 @@ namespace CourseWorkMMO.Elements
             TypeGenerator.Add((type, generator));
         }
 
+        public override void Clear()
+        {
+            _currentTime = 0;
+            _nextTime = int.MaxValue;
+            WorkingOn = null;
+            WorkingTime = 0;
+            _fullWorking = false;
+            _blockingOnStart = 0;
+            _blockingOnFinish = 0;
+            FailureCount = 0;
+            CountFinished = 0;
+            Queue.Clear();
+        }
+
         public override void PrintStatistic()
         {
             Console.Write($"\n{Name}");
             Console.Write($", Working: {FullWorking}");
-            Console.Write($", Queue: {Queue.QueueSize}");
+            if (Queue.QueueMaxSize > 0) Console.Write($", Queue: {Queue.QueueSize}");
             Console.Write($", Failure: {FailureCount}");
             Console.Write($", Next time: {(NextTime == double.MaxValue ? "-" : NextTime)}");
             if (BlockingOnStart > 0) Console.Write(", start blocked");
@@ -214,7 +228,8 @@ namespace CourseWorkMMO.Elements
             Console.Write($", total proceed: {CountFinished}");
             Console.Write($", failure percent: {FailurePercent}%");
             Console.Write($", Working time percent: {WorkingTimePercent}%");
-            Console.Write($", avarage queue size: {Math.Round(Queue.QueueSizeSum / CurrentTime, 3)}");
+            if (Queue.QueueMaxSize == 0) Console.Write(", no queue");
+            else Console.Write($", avarage queue size: {Math.Round(Queue.QueueSizeSum / CurrentTime, 3)}");
         }
 
         public virtual void SetStartingWorkingOn(Item item, double finishTime)

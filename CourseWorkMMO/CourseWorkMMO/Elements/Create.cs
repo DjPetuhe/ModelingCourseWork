@@ -12,11 +12,18 @@ namespace CourseWorkMMO.Elements
 
         public override void NextStep()
         {
-            Item item = new();
+            Item item = new()
+            {
+                CreatedTime = CurrentTime
+            };
             Created++;
             Element? next = Selector.ChooseNextElement(item);
             MovedTo = next != null ? next.Name : "Dispose";
-            if (next == null) GeneralDispose.Destroy(item, CurrentTime);
+            if (next == null)
+            {
+                if (PersonalDispose == null) throw new Exception("There is no dispose");
+                else PersonalDispose.Destroy(item, CurrentTime);
+            }
             else next.MoveTo(item);
             UpdateNextTime();
         }
@@ -35,6 +42,13 @@ namespace CourseWorkMMO.Elements
         }
 
         public void SetStartingTime(double time) => NextTime = time;
+
+        public override void Clear()
+        {
+            Created = 0;
+            CurrentTime = 0;
+            UpdateNextTime();
+        }
     }
 
     public class Create<T> : Create where T : Item, new()
@@ -53,7 +67,7 @@ namespace CourseWorkMMO.Elements
             MovedTo = next != null ? next.Name : "Dispose";
             if (next == null)
             {
-                if (PersonalDispose == null) GeneralDispose.Destroy(item, CurrentTime);
+                if (PersonalDispose == null) throw new Exception("There is no dispose");
                 else PersonalDispose.Destroy(item, CurrentTime);
             }
             else next.MoveTo(item);

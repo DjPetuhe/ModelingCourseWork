@@ -31,8 +31,8 @@ namespace CourseWorkMMO.Elements
             get { return _subProcesses.Where(p => p.FullWorking).Count(); }
         }
 
-        private Action<Item>? _addition = null;
-        public override Action<Item>? Addition 
+        private Action<Item, double>? _addition = null;
+        public override Action<Item, double>? Addition 
         { 
             get { return _addition; }
             set 
@@ -143,6 +143,16 @@ namespace CourseWorkMMO.Elements
                 process.AddGeneratorForType(type, generator);
         }
 
+        public override void Clear()
+        {
+            PartlyWorking = false;
+            _currentTime = 0;
+            WorkingSubprocessSum = 0;
+            foreach (var pr in _subProcesses)
+                pr.Clear();
+            base.Clear();
+        }
+
         public override void PrintEvent()
         {
             foreach (var process in _eventProcesses)
@@ -153,7 +163,7 @@ namespace CourseWorkMMO.Elements
         {
             Console.Write($"\n{Name}");
             Console.Write($", Working processes: {WorkingProcesses}");
-            Console.Write($", Queue: {Queue.QueueSize}");
+            if (Queue.QueueMaxSize > 0) Console.Write($", Queue: {Queue.QueueSize}");
             Console.Write($", Failure: {FailureCount}");
             Console.Write($", Next time: {(NextTime == double.MaxValue ? "-" : NextTime)}");
             if (BlockingOnStart > 0) Console.Write(", start blocked");
