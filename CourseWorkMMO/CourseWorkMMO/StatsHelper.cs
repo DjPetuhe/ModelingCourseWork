@@ -8,6 +8,7 @@ namespace CourseWorkMMO
         public static int AdditionalEventHappened { get; set; }
         public static double AvarageItemsInModelSum { get; private set; }
         public static int StartingItems { get; private set; }
+        public static double TransitionPeriod { get; set; }
         
         public static double TotalLifeTime
         {
@@ -15,9 +16,11 @@ namespace CourseWorkMMO
         }
 
         public static SortedList<int, double> TotalLifeTimesType { get; private set; } = new();
+        public static SortedList<int, double> TotalLifeTimesTypeAfterTranPeriod { get; private set; } = new();
 
         public static SortedList<int, int> ExitedPierType { get; private set; } = new();
-        
+        public static SortedList<int, int> ExitedPierTypeAfterTranPeriod { get; private set; } = new();
+
         private static List<List<double>> _xStatistics123 = new();
         private static List<List<double>> _yStatistics123 = new();
         private static List<List<double>> _xStatisticsAll = new();
@@ -31,9 +34,19 @@ namespace CourseWorkMMO
             {
                 TotalLifeTimesType.Add(item.InitialType, 0);
                 ExitedPierType.Add(item.InitialType, 0);
+                if (!TotalLifeTimesTypeAfterTranPeriod.ContainsKey(item.InitialType))
+                {
+                    TotalLifeTimesTypeAfterTranPeriod.Add(item.InitialType, 0);
+                    ExitedPierTypeAfterTranPeriod.Add(item.InitialType, 0);
+                }
             }
             TotalLifeTimesType[item.InitialType] += currentTime - item.CreatedTime;
             ExitedPierType[item.InitialType]++;
+            if (currentTime >= TransitionPeriod)
+            {
+                TotalLifeTimesTypeAfterTranPeriod[item.InitialType] += currentTime - item.CreatedTime;
+                ExitedPierTypeAfterTranPeriod[item.InitialType]++;
+            }    
         }
 
         public static void EvaluateStartingItems(List<Element> elements)
@@ -62,6 +75,13 @@ namespace CourseWorkMMO
             return TotalLifeTimesType[type] / ExitedPierType[type];
         }
 
+        public static double AvarageLifeTimeTypeTransitionPeriod(int type)
+        {
+            if (!ExitedPierTypeAfterTranPeriod.ContainsKey(type))
+                return 0;
+            return TotalLifeTimesTypeAfterTranPeriod[type] / ExitedPierTypeAfterTranPeriod[type];
+        }
+
         public static double AvarageLifeTimeType(List<int> types)
         {
             double lifeTimesSum = 0;
@@ -72,6 +92,20 @@ namespace CourseWorkMMO
                     return 0;
                 lifeTimesSum += TotalLifeTimesType[type];
                 exitedPierSum += ExitedPierType[type];
+            }
+            return lifeTimesSum / exitedPierSum;
+        }
+
+        public static double AvarageLifeTimeTypeTransitionPeriod(List<int> types)
+        {
+            double lifeTimesSum = 0;
+            int exitedPierSum = 0;
+            foreach (int type in types)
+            {
+                if (!ExitedPierTypeAfterTranPeriod.ContainsKey(type))
+                    return 0;
+                lifeTimesSum += TotalLifeTimesTypeAfterTranPeriod[type];
+                exitedPierSum += ExitedPierTypeAfterTranPeriod[type];
             }
             return lifeTimesSum / exitedPierSum;
         }
@@ -115,6 +149,18 @@ namespace CourseWorkMMO
 
             plt123.SaveFig("ships123Scatter.png");
             pltAll.SaveFig("shipsAllScatter.png");
+        }
+
+        public static void PrintAvarageStatsAfterTranPeriod()
+        {
+            Console.Write("\n\n" + new string('=', 30) + $"AVARAGE RESULTS FOR {_testNum + 1} TESTS IN TRANSITION PERIOD" + new string('=', 30));
+            foreach (int type in TotalLifeTimesTypeAfterTranPeriod.Keys)
+            {
+                if (type == 0) Console.Write($"\nStorm avarage life time: {AvarageLifeTimeTypeTransitionPeriod(type)}");
+                else Console.Write($"\nShip type {type} avarage life time: {AvarageLifeTimeTypeTransitionPeriod(type)}");
+            }
+            Console.Write($"\nShip type 1-3 avarage life time: {AvarageLifeTimeTypeTransitionPeriod(new List<int>() { 1, 2, 3 })}");
+            Console.Write($"\nShip all types avarage life time: {AvarageLifeTimeTypeTransitionPeriod(new List<int>() { 1, 2, 3, 4 })}");
         }
     }
 }

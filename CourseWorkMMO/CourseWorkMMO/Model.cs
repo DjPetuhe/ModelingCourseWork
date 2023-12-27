@@ -5,6 +5,7 @@ namespace CourseWorkMMO
     public class Model
     {
         public bool PrintingSteps { get; set; }
+        public bool PrintingResults { get; set; }
         public Func<List<Element>, bool>? Addition { get; set; } = null;
         private readonly List<Dispose> _disposes = new();
         private readonly List<Element> _elements;
@@ -47,7 +48,7 @@ namespace CourseWorkMMO
                 }
                 nextTime = _elements.Min(el => el.NextTime);
             }
-            PrintResults();
+            if (PrintingResults) PrintResults();
         }
 
         private void Clear()

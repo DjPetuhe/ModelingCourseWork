@@ -10,10 +10,10 @@ namespace CourseWorkMMO
     {
         public static void Main(string[] args)
         {
-            PortModel(5, false);
+            PortModel(5, false, false);
         }
 
-        public static void PortModel(int amountOfTests, bool printSteps = true)
+        public static void PortModel(int amountOfTests, bool printSteps = true, bool printingResults = true)
         {
             IGenerator createShipGenerator = new UniformGenerator(4, 18);
             IGenerator createStormGenerator = new ExponentialGenerator(48);
@@ -48,7 +48,8 @@ namespace CourseWorkMMO
 
             Model mod = new(elements)
             {
-                PrintingSteps = printSteps
+                PrintingSteps = printSteps,
+                PrintingResults = printingResults
             };
 
             pier.AddGeneratorForType(1, pierType1Generator);
@@ -87,6 +88,7 @@ namespace CourseWorkMMO
                 if (item.Type == 6) StatsHelper.AddLifeTime(item, currentTime);
             };
 
+            StatsHelper.TransitionPeriod = 60000;
             for (int i = 0; i < amountOfTests; i++)
             {
                 StatsHelper.NextTest(i);
@@ -99,8 +101,7 @@ namespace CourseWorkMMO
 
                 mod.Simulate(500000);
             }
-
-            StatsHelper.BuildPlots();
+            StatsHelper.PrintAvarageStatsAfterTranPeriod();
         }
     }
 }
