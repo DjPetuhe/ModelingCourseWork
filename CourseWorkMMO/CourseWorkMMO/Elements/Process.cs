@@ -199,7 +199,7 @@ namespace CourseWorkMMO.Elements
         public override void Clear()
         {
             _currentTime = 0;
-            _nextTime = int.MaxValue;
+            _nextTime = double.MaxValue;
             WorkingOn = null;
             WorkingTime = 0;
             _fullWorking = false;

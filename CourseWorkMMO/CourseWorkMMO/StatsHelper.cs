@@ -15,6 +15,9 @@ namespace CourseWorkMMO
             get { return TotalLifeTimesType.Values.Sum(); }
         }
 
+        public static SortedList<int, double> TotalLifeTimesAllPerTest { get; private set; } = new();
+        public static SortedList<int, int> ExitedPierAllPerTest { get; private set; } = new();
+
         public static SortedList<int, double> TotalLifeTimesType { get; private set; } = new();
         public static SortedList<int, double> TotalLifeTimesTypeAfterTranPeriod { get; private set; } = new();
 
@@ -42,6 +45,8 @@ namespace CourseWorkMMO
             }
             TotalLifeTimesType[item.InitialType] += currentTime - item.CreatedTime;
             ExitedPierType[item.InitialType]++;
+            TotalLifeTimesAllPerTest[_testNum] += currentTime - item.CreatedTime;
+            ExitedPierAllPerTest[_testNum]++;
             if (currentTime >= TransitionPeriod)
             {
                 TotalLifeTimesTypeAfterTranPeriod[item.InitialType] += currentTime - item.CreatedTime;
@@ -110,6 +115,15 @@ namespace CourseWorkMMO
             return lifeTimesSum / exitedPierSum;
         }
 
+        public static double InfluenceOfRandomVariables(List<int> types)
+        {
+            double y = AvarageLifeTimeTypeTransitionPeriod(types);
+            double sum = 0;
+            for (int i = 0; i < _testNum; i++)
+                sum += Math.Pow(TotalLifeTimesAllPerTest[i] / ExitedPierAllPerTest[i] - y, 2);
+            return sum;
+        }
+
         public static void Clear()
         {
             StartingItems = 0;
@@ -126,6 +140,8 @@ namespace CourseWorkMMO
             _yStatistics123.Add(new());
             _xStatisticsAll.Add(new());
             _yStatisticsAll.Add(new());
+            TotalLifeTimesAllPerTest.Add(_testNum, 0);
+            ExitedPierAllPerTest.Add(_testNum, 0);
         }
 
         public static void BuildPlots()
@@ -161,6 +177,7 @@ namespace CourseWorkMMO
             }
             Console.Write($"\nShip type 1-3 avarage life time: {AvarageLifeTimeTypeTransitionPeriod(new List<int>() { 1, 2, 3 })}");
             Console.Write($"\nShip all types avarage life time: {AvarageLifeTimeTypeTransitionPeriod(new List<int>() { 1, 2, 3, 4 })}");
+            Console.Write($"\nInfluence of random variables {InfluenceOfRandomVariables(new List<int>() { 1, 2, 3, 4 })}");
         }
     }
 }

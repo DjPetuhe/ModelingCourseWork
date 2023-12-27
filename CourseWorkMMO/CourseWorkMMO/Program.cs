@@ -10,7 +10,7 @@ namespace CourseWorkMMO
     {
         public static void Main(string[] args)
         {
-            PortModel(5, false, false);
+            PortModel(102, false, false);
         }
 
         public static void PortModel(int amountOfTests, bool printSteps = true, bool printingResults = true)
@@ -88,7 +88,7 @@ namespace CourseWorkMMO
                 if (item.Type == 6) StatsHelper.AddLifeTime(item, currentTime);
             };
 
-            StatsHelper.TransitionPeriod = 60000;
+            StatsHelper.TransitionPeriod = 50000;
             for (int i = 0; i < amountOfTests; i++)
             {
                 StatsHelper.NextTest(i);
